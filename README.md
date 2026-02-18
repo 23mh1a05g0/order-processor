@@ -199,7 +199,5 @@ Implement Saga pattern
 
 ## ✅ All Working URLs (Final Checklist)
 Service	URL
-Application	    http://localhost:8080
 Health	        http://localhost:8080/health
 RabbitMQ UI 	http://localhost:15672
-MySQL	        http://localhost:3307
