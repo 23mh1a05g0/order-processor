@@ -201,3 +201,7 @@ Implement Saga pattern
 Service	URL
 Health	        http://localhost:8080/health
 RabbitMQ UI 	http://localhost:15672
+
+### Video URL
+
+https://drive.google.com/file/d/1dYQHrC-sYLDv6dm_Sp0RVPXG_OlwOroT/view?usp=sharing
