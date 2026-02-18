@@ -38,63 +38,62 @@ OrderPlacedEvent → RabbitMQ → OrderProcessor Service → MySQL -> OrderProce
 
 ### 1️⃣ Build and Start Services
 
-```bash
 docker compose up --build
 
 
-This will start:
+## This will start:
 
 MySQL
 RabbitMQ
 Order Processor Service
 
-🌐 Service URLs
-🔹 Application
+## 🌐 Service URLs
+# 🔹 Application
 http://localhost:8080
 
-🔹 Health Check
+# 🔹 Health Check
 http://localhost:8080/actuator/health
 
 
-Expected response:
+## Expected response:
 
 {
   "status": "UP"
 }
 
-🔹 RabbitMQ Management Console
+# 🔹 RabbitMQ Management Console
 http://localhost:15672
 
 
-Default credentials:
+# Default credentials:
 
 username: guest
 password: guest
 
-🔹 MySQL
+# 🔹 MySQL
 localhost:3307
 
 
-Credentials (from docker-compose):
+##  Credentials (from docker-compose):
 
 username: root
 password: root
 database: order_db
 
-📬 Message Queues
-Exchange
+# # 📬 Message Queues
+# Exchange
 order.events
 
-Routing Keys
+# Routing Keys
 order.placed
 order.processed
 
-Queues
+# Queues
 order.placed.queue
 order.processed.queue
 order.dlq
 
-📨 Example OrderPlacedEvent
+# 📨 Example OrderPlacedEvent
 {
   "orderId": "123",
   "productId": "P100",
@@ -104,71 +103,50 @@ order.dlq
 }
 
 
-Publish this to:
+## Publish this to:
 
-Exchange:
+# Exchange:
 
 order.events
-
-
 Routing Key:
-
 order.placed
 
-
-The service will:
+# The service will:
 
 Save order in DB
-
 Update status to PROCESSED
-
 Publish OrderProcessedEvent
 
-🧪 Running Tests
+## 🧪 Running Tests
 mvn clean test
 
-
-Includes:
+# Includes:
 
 Unit tests (Service Layer)
-
 Integration tests (RabbitMQ + H2)
 
-🔄 Event Flow
+## 🔄 Event Flow
 
 OrderPlacedEvent received
-
 Idempotency check (by orderId)
-
 Order saved/updated
-
 Status set to PROCESSED
-
 OrderProcessedEvent published
-
 ACK message
-
 Errors routed to DLQ
 
-🧠 Key Design Concepts Implemented
+## 🧠 Key Design Concepts Implemented
 
 Stateless microservice
-
 JSON message serialization
-
 Manual ACK handling
-
 Dead Letter Queue (DLQ)
-
 Transactional DB updates
-
 Retry-ready design
-
 Environment variable configuration
-
 Structured logging
 
-📦 Environment Variables
+## 📦 Environment Variables
 SPRING_DATASOURCE_URL
 SPRING_DATASOURCE_USERNAME
 SPRING_DATASOURCE_PASSWORD
@@ -177,65 +155,51 @@ SPRING_RABBITMQ_PORT
 SPRING_RABBITMQ_USERNAME
 SPRING_RABBITMQ_PASSWORD
 
-🐳 Docker Commands
+## 🐳 Docker Commands
 
-Stop services:
+# Stop services:
 
 docker compose down
 
-
-Remove volumes:
+# Remove volumes:
 
 docker compose down -v
 
-📊 Observability
+## 📊 Observability
 
-Health Endpoint:
+# Health Endpoint:
 
 /actuator/health
 
 
-Logs:
+## Logs:
 
 docker compose logs -f
 
-🏆 Learning Outcomes
+## 🏆 Learning Outcomes
 
-This project demonstrates:
+# This project demonstrates:
 
 Distributed system design
-
 Event-driven architecture
-
 Fault tolerance & idempotency
-
 Production-ready Spring Boot configuration
-
 Containerized microservices
-
 Testing strategies for async systems
 
-📌 Future Improvements
+## 📌 Future Improvements
 
 Add Retry with Exponential Backoff
-
 Implement Circuit Breaker
-
 Add Prometheus Metrics
-
 Deploy to Kubernetes
-
 Add Testcontainers
-
 Implement Saga pattern
 
 
-✅ All Working URLs (Final Checklist)
+## ✅ All Working URLs (Final Checklist)
 Service	URL
-Application	http://localhost:8080
-
-Health	http://localhost:8080/actuator/health
-
-RabbitMQ UI	http://localhost:15672
-
-MySQL	localhost:3307
+Application	    http://localhost:8080
+Health	        http://localhost:8080/actuator/health
+RabbitMQ UI 	http://localhost:15672
+MySQL	        http://localhost:3307
