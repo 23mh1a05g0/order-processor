@@ -4,46 +4,70 @@ import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String EXCHANGE = "order.events";
-    public static final String DLX = "dlx.order.events";
-    public static final String QUEUE = "order.placed.queue";
-    public static final String DLQ = "order.dlq";
+    public static final String ORDER_EVENTS_EXCHANGE = "order.events";
+    public static final String DEAD_LETTER_EXCHANGE = "order.dlx";
+
+    public static final String ORDER_PLACED_QUEUE = "order.placed.queue";
+    public static final String ORDER_PROCESSED_QUEUE = "order.processed.queue";
+    public static final String ORDER_DLQ = "order.dlq";
+
+    public static final String ORDER_PLACED_KEY = "order.placed";
+    public static final String ORDER_PROCESSED_KEY = "order.processed";
+    public static final String ORDER_DLQ_KEY = "order.dlq";
+
 
     @Bean
     public TopicExchange orderEventsExchange() {
-        return new TopicExchange(EXCHANGE, true, false);
+        return new TopicExchange(ORDER_EVENTS_EXCHANGE, true, false);
     }
 
     @Bean
     public TopicExchange deadLetterExchange() {
-        return new TopicExchange(DLX, true, false);
+        return new TopicExchange(DEAD_LETTER_EXCHANGE, true, false);
     }
+
 
     @Bean
     public Queue orderPlacedQueue() {
-        Map<String, Object> args = new HashMap<>();
-        args.put("x-dead-letter-exchange", DLX);
-        args.put("x-dead-letter-routing-key", "order.placed");
-        return new Queue(QUEUE, true, false, false, args);
+        return QueueBuilder
+                .durable(ORDER_PLACED_QUEUE)
+                .deadLetterExchange(DEAD_LETTER_EXCHANGE)
+                .deadLetterRoutingKey(ORDER_DLQ_KEY)
+                .build();
+    }
+
+    @Bean
+    public Queue orderProcessedQueue() {
+        return QueueBuilder
+                .durable(ORDER_PROCESSED_QUEUE)
+                .build();
     }
 
     @Bean
     public Queue orderDlq() {
-        return new Queue(DLQ, true);
+        return QueueBuilder
+                .durable(ORDER_DLQ)
+                .build();
     }
+
 
     @Bean
     public Binding bindOrderPlacedQueue() {
         return BindingBuilder
                 .bind(orderPlacedQueue())
                 .to(orderEventsExchange())
-                .with("order.placed");
+                .with(ORDER_PLACED_KEY);
+    }
+
+    @Bean
+    public Binding bindOrderProcessedQueue() {
+        return BindingBuilder
+                .bind(orderProcessedQueue())
+                .to(orderEventsExchange())
+                .with(ORDER_PROCESSED_KEY);
     }
 
     @Bean
@@ -51,6 +75,6 @@ public class RabbitMQConfig {
         return BindingBuilder
                 .bind(orderDlq())
                 .to(deadLetterExchange())
-                .with("order.placed");
+                .with(ORDER_DLQ_KEY);
     }
 }
